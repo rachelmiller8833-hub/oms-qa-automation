@@ -15,25 +15,22 @@ The project demonstrates clean backend architecture, async API design, proper li
 - pytest
 - Docker & docker-compose
 
----
-
 ## Project Structure
 
+```
 ├── api
-│ ├── main.py # FastAPI application & routes
-│ ├── db.py # MongoDB connection & lifecycle
+│ ├── main.py        # FastAPI application & routes
+│ ├── db.py          # MongoDB connection & lifecycle
 │ ├── orders_repo.py # Repository layer (DB access only)
-│ ├── schemas.py # Pydantic request/response models
+│ ├── schemas.py     # Pydantic request/response models
 │ └── requirements.txt
 │
 ├── tests
-│ ├── conftest.py # pytest fixtures
+│ ├── conftest.py    # pytest fixtures
 │ └── test_orders.py # API integration tests
 │
 └── docker-compose.yml
-
-
----
+```
 
 ## Architecture Overview
 
@@ -59,6 +56,7 @@ The project demonstrates clean backend architecture, async API design, proper li
   "total_price": 1250,
   "status": "Pending"
 }
+```
 
 ## API Endpoints
 
