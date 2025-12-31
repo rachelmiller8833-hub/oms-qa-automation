@@ -155,16 +155,11 @@ This command:
 - Tests run inside Docker.
 - A dedicated MongoDB database is used for tests.
 - Collections are cleaned before and after each test.
+- Order status updates are covered using pytest parameterized tests
 
-Test coverage includes:
-- Create order
-- Retrieve order
-- Update order status
-- Delete order
-- Data integrity (items are not modified by status update)
-- Negative scenario: updating a non-existent order returns `404 Not Found`
-
----
+please note: 
+Additional QA documentation is available under the `docs/` directory:
+Test Plan (`docs/test-plan.md`)
 
 ## CI/CD – GitHub Actions (Task 2)
 
@@ -182,21 +177,8 @@ The workflow:
 
 ### Parallel Test Execution
 
-To optimize CI execution time, the test suite is executed in parallel using `pytest-xdist`.
-
-- Parallel execution is enabled in the CI pipeline using:
-  ```bash
-  pytest -n auto
-  ```
-Each pytest worker uses an isolated MongoDB database to avoid data collisions during parallel runs
-
-#### Verification
-
-Parallel execution was verified by running pytest with verbose output:
-
-pytest -n auto -vv
-
-The output shows multiple workers (e.g. gw0, gw1, …), confirming that tests are distributed and executed concurrently.
+Parallel test execution is enabled using pytest-xdist (`-n auto`) to reduce CI runtime.
+Each worker uses an isolated MongoDB database to avoid data collisions.
 
 ### Triggers
 
@@ -229,6 +211,8 @@ deployment stage.
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
 - All responses are validated using Pydantic response models.
 - The system is designed to be easily extended with filtering, pagination, and real-time notifications.
+
+
 
 
 
