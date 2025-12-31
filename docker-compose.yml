@@ -27,6 +27,7 @@ services:
     build: ./tests
     volumes:
       - ./tests:/tests
+      - ./test-results:/test-results
     environment:
       BASE_URL: http://api:8000
       MONGO_URI: mongodb://mongo:27017
@@ -34,7 +35,7 @@ services:
       MONGO_ORDERS_COLLECTION: orders
       TOKEN: ""
     working_dir: /tests
-    command: pytest -q -s
+    command: pytest -q -s --junitxml=/test-results/junit.xml
     depends_on:
       api:
         condition: service_healthy
