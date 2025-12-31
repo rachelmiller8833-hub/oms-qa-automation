@@ -17,11 +17,18 @@ jobs:
       - name: Build images
         run: docker compose build
 
+      - name: Create test-results directory
+        run: mkdir -p test-results
+
       - name: Start API and Mongo
         run: docker compose up -d mongo api
 
       - name: Run pytest (docker-compose tests service)
         run: docker compose run --rm tests
+      
+      - name: List test-results
+        if: always()
+        run: ls -la test-results || true
 
       - name: Upload junit report
         if: always()
@@ -29,6 +36,7 @@ jobs:
         with:
           name: pytest-junit
           path: test-results/junit.xml
+          if-no-files-found: warn
 
       - name: Tear down
         if: always()
