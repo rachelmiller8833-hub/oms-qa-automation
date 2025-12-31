@@ -213,13 +213,14 @@ This file is intentionally ignored by Git (`.gitignore`), but is uploaded by the
 
 ## Deployment Gate (Branch Protection)
 
-A deployment gate is enforced on the `main` branch using GitHub Branch Protection rules.
+The project implements a CI-based deployment gate.
 
-- All changes to `main` must be merged via a Pull Request
-- CI tests are executed automatically on every Pull Request
-- Merging to `main` is blocked if the CI workflow fails
+All changes to the `main` branch are intended to be merged via Pull Requests.
+The CI pipeline runs automatically on every Pull Request and is designed to
+block merging in case of test failures.
 
-This ensures that only code that passes all automated API tests can be merged into the main branch.
+Due to GitHub UI limitations in this repository setup, the branch protection
+rule requiring a specific status check is described here conceptually.
 
 ## Notes
 
