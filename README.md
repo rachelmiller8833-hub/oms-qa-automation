@@ -13,6 +13,7 @@ The project demonstrates clean backend architecture, async API design, proper li
 - MongoDB
 - Motor (async MongoDB driver)
 - pytest
+- pytest-xdist
 - Docker & docker-compose
 
 ## Project Structure
@@ -161,6 +162,7 @@ Test coverage includes:
 - Update order status
 - Delete order
 - Data integrity (items are not modified by status update)
+- Negative scenario: updating a non-existent order returns `404 Not Found`
 
 ---
 
@@ -177,6 +179,24 @@ The workflow:
 4. Waits for the API healthcheck to pass.
 5. Runs pytest from the tests container.
 6. Exports the JUnit XML report and uploads it as a GitHub Actions artifact.
+
+### Parallel Test Execution
+
+To optimize CI execution time, the test suite is executed in parallel using `pytest-xdist`.
+
+- Parallel execution is enabled in the CI pipeline using:
+  ```bash
+  pytest -n auto
+  ```
+Each pytest worker uses an isolated MongoDB database to avoid data collisions during parallel runs
+
+#### Verification
+
+Parallel execution was verified by running pytest with verbose output:
+
+pytest -n auto -vv
+
+The output shows multiple workers (e.g. gw0, gw1, …), confirming that tests are distributed and executed concurrently.
 
 ### Triggers
 
