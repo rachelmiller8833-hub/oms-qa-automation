@@ -23,8 +23,8 @@ jobs:
       - name: Start API and Mongo
         run: docker compose up -d mongo api
 
-      - name: Run pytest (docker-compose tests service)
-        run: docker compose run --name oms_tests_run tests
+      - name: Run pytest in parallel (xdist)
+        run: docker compose run --name oms_tests_run tests pytest -q -n auto --junitxml=/test-results/junit.xml
       
       - name: Copy junit.xml from tests container
         if: always()

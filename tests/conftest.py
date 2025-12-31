@@ -9,6 +9,11 @@ def clean_orders_collection():
     mongo_uri = os.getenv("MONGO_URI", "mongodb://mongo:27017")
     db_name = os.getenv("MONGO_DB", "orders_db")
 
+    # If tests run with pytest-xdist, each worker gets its own DB to avoid collisions
+    worker_id = os.getenv("PYTEST_XDIST_WORKER")  # e.g. "gw0", "gw1", ...
+    if worker_id:
+        db_name = f"{db_name}_{worker_id}"
+
     client = MongoClient(mongo_uri)
     db = client[db_name]
 
