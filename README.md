@@ -185,9 +185,9 @@ The workflow:
 To optimize CI execution time, the test suite is executed in parallel using `pytest-xdist`.
 
 - Parallel execution is enabled in the CI pipeline using:
-  ```bash
+
   pytest -n auto
-  ```
+
 Each pytest worker uses an isolated MongoDB database to avoid data collisions during parallel runs
 
 #### Verification
@@ -226,6 +226,5 @@ This ensures that only code that passes all automated API tests can be merged in
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
 - All responses are validated using Pydantic response models.
 - The system is designed to be easily extended with filtering, pagination, and real-time notifications.
-
 
 
