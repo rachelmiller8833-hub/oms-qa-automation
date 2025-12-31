@@ -162,6 +162,35 @@ Test coverage includes:
 - Delete order
 - Data integrity (items are not modified by status update)
 
+---
+
+## CI/CD – GitHub Actions (Task 2)
+
+This project includes a GitHub Actions workflow that runs the API integration tests in a fully dockerized environment (API + MongoDB + tests).
+
+### What runs on each PR / push
+
+The workflow:
+1. Checks out the repository.
+2. Builds Docker images (API + tests).
+3. Starts MongoDB and the API services.
+4. Waits for the API healthcheck to pass.
+5. Runs pytest from the tests container.
+6. Exports the JUnit XML report and uploads it as a GitHub Actions artifact.
+
+### Triggers
+
+Tests run automatically on:
+- Pull Requests targeting `main`
+- Pushes to `main` (and `develop` if configured)
+
+### Test Report (JUnit)
+
+A JUnit report is generated at:
+- `test-results/junit.xml`
+
+This file is intentionally ignored by Git (`.gitignore`), but is uploaded by the CI pipeline as an artifact, so it can be downloaded from the GitHub Actions run.
+
 ## Notes
 
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
