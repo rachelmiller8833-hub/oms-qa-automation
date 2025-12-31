@@ -24,8 +24,14 @@ jobs:
         run: docker compose up -d mongo api
 
       - name: Run pytest (docker-compose tests service)
-        run: docker compose run --rm tests
+        run: docker compose run --name oms_tests_run tests
       
+      - name: Copy junit.xml from tests container
+        if: always()
+        run: |
+          mkdir -p test-results
+          docker cp oms_tests_run:/test-results/junit.xml test-results/junit.xml
+    
       - name: List test-results
         if: always()
         run: ls -la test-results || true
@@ -36,7 +42,10 @@ jobs:
         with:
           name: pytest-junit
           path: test-results/junit.xml
-          if-no-files-found: warn
+      
+      - name: Remove tests container
+        if: always()
+        run: docker rm -f oms_tests_run || true
 
       - name: Tear down
         if: always()
