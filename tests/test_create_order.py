@@ -1,3 +1,4 @@
+from bson import ObjectId
 import requests
 
 
@@ -13,7 +14,6 @@ def test_get_order(base_url, created_order, order_payload):
     assert get_resp.status_code == 200, get_resp.text
 
     fetched = get_resp.json()
-    assert "_id" in fetched, f"Missing _id. keys={list(fetched.keys())}"
     assert fetched["_id"] == order_id
     assert fetched["user_id"] == order_payload["user_id"]
     assert fetched["status"] == order_payload["status"]
@@ -51,6 +51,16 @@ def test_delete_order(base_url, created_order):
     # after deleting the order, make sure it doesn't exist anymore
     get_resp = requests.get(f"{base_url}/orders/{order_id}")
     assert get_resp.status_code == 404, get_resp.text
+
+def test_update_nonexistent_order_returns_404(base_url):
+    nonexistent_id = "aaaaaaaaaaaaaaaaaaaaaaaa"  # 24-hex string, valid format
+    update_payload = {"status": "Shipped"}
+
+    resp = requests.put(f"{base_url}/orders/{nonexistent_id}", json=update_payload)
+
+    assert resp.status_code == 404, resp.text
+
+
 
 
 
