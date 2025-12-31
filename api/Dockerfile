@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Install tools needed during build (wget for optional NetFree CA)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends wget \
+    && apt-get install -y --no-install-recommends wget ca-certificates \
+    && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # --- NETFREE CERT INSTALL (optional) ---
@@ -16,9 +17,9 @@ RUN if [ "$USE_NETFREE" = "true" ]; then \
     else \
       echo "Skipping NetFree CA install"; \
     fi
-ENV NODE_EXTRA_CA_CERTS=/etc/ca-bundle.crt
-ENV REQUESTS_CA_BUNDLE=/etc/ca-bundle.crt
-ENV SSL_CERT_FILE=/etc/ca-bundle.crt
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 # --- END NETFREE CERT INSTALL ---
 
 COPY requirements.txt .
