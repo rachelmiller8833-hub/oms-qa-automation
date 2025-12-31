@@ -211,6 +211,16 @@ A JUnit report is generated at:
 
 This file is intentionally ignored by Git (`.gitignore`), but is uploaded by the CI pipeline as an artifact, so it can be downloaded from the GitHub Actions run.
 
+## Deployment Gate (Branch Protection)
+
+A deployment gate is enforced on the `main` branch using GitHub Branch Protection rules.
+
+- All changes to `main` must be merged via a Pull Request
+- CI tests are executed automatically on every Pull Request
+- Merging to `main` is blocked if the CI workflow fails
+
+This ensures that only code that passes all automated API tests can be merged into the main branch.
+
 ## Notes
 
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
