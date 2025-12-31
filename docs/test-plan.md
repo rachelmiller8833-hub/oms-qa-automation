@@ -58,6 +58,8 @@ Collections are cleaned between tests to ensure full isolation.
 - Retrieve an existing order by ID → returns correct data
 - Update order status (Pending → Shipped) → status updated, items unchanged
 - Delete an order → order removed from database
+- Order status updates are validated using pytest parameterized tests,
+  covering multiple valid statuses (Pending, Processing, Shipped, Delivered)
 
 ### Negative / Edge Scenarios
 - Update non-existent order → `404 Not Found`

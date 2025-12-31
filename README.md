@@ -155,6 +155,11 @@ This command:
 - Tests run inside Docker.
 - A dedicated MongoDB database is used for tests.
 - Collections are cleaned before and after each test.
+- Order status updates are covered using pytest parameterized tests
+
+please note: 
+Additional QA documentation is available under the `docs/` directory:
+Test Plan (`docs/test-plan.md`)
 
 ## CI/CD – GitHub Actions (Task 2)
 
@@ -206,8 +211,7 @@ deployment stage.
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
 - All responses are validated using Pydantic response models.
 - The system is designed to be easily extended with filtering, pagination, and real-time notifications.
-- Additional QA documentation is available under the `docs/` directory:
-Test Plan (`docs/test-plan.md`)
+
 
 
 

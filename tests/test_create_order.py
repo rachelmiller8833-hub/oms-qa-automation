@@ -1,4 +1,5 @@
 import requests
+import pytest
 
 
 def test_create_order(created_order):
@@ -18,7 +19,8 @@ def test_get_order(base_url, created_order, order_payload):
     assert fetched["status"] == order_payload["status"]
     assert fetched["items"] == order_payload["items"]
 
-def test_update_order_put(base_url, created_order, order_payload):
+@pytest.mark.parametrize("new_status", ["Pending", "Processing", "Shipped", "Delivered"])
+def test_update_order_put(base_url, created_order, order_payload, new_status):
     order_id = created_order["_id"]
     
     before_resp = requests.get(f"{base_url}/orders/{order_id}")
@@ -26,7 +28,7 @@ def test_update_order_put(base_url, created_order, order_payload):
     before = before_resp.json()
     original_items = before["items"]
 
-    update_payload = {"status": "Shipped"}
+    update_payload = {"status": "new_status"}
 
     update_resp = requests.put(f"{base_url}/orders/{order_id}", json=update_payload)
     assert update_resp.status_code == 200, update_resp.text
@@ -34,7 +36,7 @@ def test_update_order_put(base_url, created_order, order_payload):
     updated = update_resp.json()
     assert updated["_id"] == order_id
     assert updated["user_id"] == order_payload["user_id"]
-    assert updated["status"] == "Shipped"
+    assert updated["status"] == "new_status"
     # validate PUT doesn't change the items
     assert updated["items"] == original_items
 
