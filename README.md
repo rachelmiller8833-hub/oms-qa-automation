@@ -211,6 +211,19 @@ A JUnit report is generated at:
 
 This file is intentionally ignored by Git (`.gitignore`), but is uploaded by the CI pipeline as an artifact, so it can be downloaded from the GitHub Actions run.
 
+### Release Tagging
+
+The project includes automated release tagging as part of the CI pipeline.
+
+After every successful CI run on the `main` branch, a Git tag is automatically
+created. This ensures that each release tag corresponds to a commit that has
+passed all automated tests, providing clear traceability between tested code
+and released versions.
+
+This setup simulates a production-ready release flow, even without an actual
+deployment stage.
+
+
 ## Notes
 
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
