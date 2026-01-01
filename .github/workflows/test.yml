@@ -1,3 +1,4 @@
+# CI workflow that builds the environment and runs API tests on push / PR
 name: CI - OMS API Tests
 
 on:
@@ -15,15 +16,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build images
-        run: docker compose build --build-arg USE_NETFREE=false
+        # Build Docker images used for API, MongoDB and tests
+        run: docker compose build
 
       - name: Create test-results directory
         run: mkdir -p test-results
 
       - name: Start API and Mongo
+        # Start only the required services for testing
         run: docker compose up -d mongo api
 
       - name: Run pytest in parallel (xdist)
+        # Execute tests inside the tests container and generate a JUnit report
         run: docker compose run --name oms_tests_run tests pytest -q -n auto --junitxml=/test-results/junit.xml
       
       - name: Copy junit.xml from tests container
@@ -37,6 +41,7 @@ jobs:
         run: ls -la test-results || true
 
       - name: Upload junit report
+        # Upload test results as a CI artifact for visibility and debugging
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -48,5 +53,6 @@ jobs:
         run: docker rm -f oms_tests_run || true
 
       - name: Tear down
+        # Clean up containers and volumes after the test run
         if: always()
         run: docker compose down -v

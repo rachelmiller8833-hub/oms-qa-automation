@@ -155,16 +155,18 @@ This command:
 - Tests run inside Docker.
 - A dedicated MongoDB database is used for tests.
 - Collections are cleaned before and after each test.
+- Order status updates are covered using pytest parameterized tests
 
-Test coverage includes:
-- Create order
-- Retrieve order
-- Update order status
-- Delete order
-- Data integrity (items are not modified by status update)
-- Negative scenario: updating a non-existent order returns `404 Not Found`
+### Mocking External Dependencies (Bonus)
 
----
+External payment processing is mocked at the API level to allow deterministic testing.
+The OMS uses a fake payment client in test scenarios, with request-based control
+(e.g. `X-Payment-Fail` header) to simulate successful and failed payment flows
+without calling real external services.
+
+please note: 
+Additional QA documentation is available under the `docs/` directory:
+Test Plan (`docs/test-plan.md`)
 
 ## CI/CD – GitHub Actions (Task 2)
 
@@ -182,21 +184,8 @@ The workflow:
 
 ### Parallel Test Execution
 
-To optimize CI execution time, the test suite is executed in parallel using `pytest-xdist`.
-
-- Parallel execution is enabled in the CI pipeline using:
-
-  pytest -n auto
-
-Each pytest worker uses an isolated MongoDB database to avoid data collisions during parallel runs
-
-#### Verification
-
-Parallel execution was verified by running pytest with verbose output:
-
-pytest -n auto -vv
-
-The output shows multiple workers (e.g. gw0, gw1, …), confirming that tests are distributed and executed concurrently.
+Parallel test execution is enabled using pytest-xdist (`-n auto`) to reduce CI runtime.
+Each worker uses an isolated MongoDB database to avoid data collisions.
 
 ### Triggers
 
@@ -221,11 +210,26 @@ block merging in case of test failures.
 
 Due to GitHub UI limitations in this repository setup, the branch protection
 rule requiring a specific status check is described here conceptually.
+### Release Tagging
+
+The project includes automated release tagging as part of the CI pipeline.
+
+After every successful CI run on the `main` branch, a Git tag is automatically
+created. This ensures that each release tag corresponds to a commit that has
+passed all automated tests, providing clear traceability between tested code
+and released versions.
+
+This setup simulates a production-ready release flow, even without an actual
+deployment stage.
+
 
 ## Notes
 
 - The POST endpoint intentionally returns only _id to keep the API contract minimal.
 - All responses are validated using Pydantic response models.
 - The system is designed to be easily extended with filtering, pagination, and real-time notifications.
+
+
+
 
 
