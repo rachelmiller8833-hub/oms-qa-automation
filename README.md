@@ -157,6 +157,13 @@ This command:
 - Collections are cleaned before and after each test.
 - Order status updates are covered using pytest parameterized tests
 
+### Mocking External Dependencies (Bonus)
+
+External payment processing is mocked at the API level to allow deterministic testing.
+The OMS uses a fake payment client in test scenarios, with request-based control
+(e.g. `X-Payment-Fail` header) to simulate successful and failed payment flows
+without calling real external services.
+
 please note: 
 Additional QA documentation is available under the `docs/` directory:
 Test Plan (`docs/test-plan.md`)
