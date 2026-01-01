@@ -1,3 +1,5 @@
+# Defines shared pytest fixtures for API integration tests.
+# Handles test isolation, database cleanup, and common test helpers.
 import os
 import pytest
 import requests
@@ -6,11 +8,12 @@ from pymongo import MongoClient
 
 @pytest.fixture(autouse=True)
 def clean_orders_collection():
+    # Ensure the orders collection is clean before and after each test
     mongo_uri = os.getenv("MONGO_URI", "mongodb://mongo:27017")
     db_name = os.getenv("MONGO_DB", "orders_db")
 
-    # If tests run with pytest-xdist, each worker gets its own DB to avoid collisions
-    worker_id = os.getenv("PYTEST_XDIST_WORKER")  # e.g. "gw0", "gw1", ...
+    # When running tests in parallel, isolate each worker in its own database
+    worker_id = os.getenv("PYTEST_XDIST_WORKER")
     if worker_id:
         db_name = f"{db_name}_{worker_id}"
 
@@ -27,11 +30,13 @@ def clean_orders_collection():
 
 @pytest.fixture
 def base_url():
+    # Base URL of the running API container
     return os.getenv("BASE_URL", "http://api:8000")
 
 
 @pytest.fixture
 def create_order(base_url):
+    # Helper fixture to create an order via the API
     def _create(payload):
         resp = requests.post(f"{base_url}/orders", json=payload)
         data = resp.json()
@@ -41,6 +46,7 @@ def create_order(base_url):
 
 @pytest.fixture
 def order_payload():
+    # Default valid order payload used across tests
     return {
         "user_id": "u_test_1",
         "items": [
@@ -54,4 +60,5 @@ def order_payload():
 
 @pytest.fixture
 def created_order(create_order, order_payload):
+    # Creates an order before a test that requires an existing order
     return create_order(order_payload)
