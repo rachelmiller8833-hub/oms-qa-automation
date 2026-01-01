@@ -28,7 +28,7 @@ def test_update_order_put(base_url, created_order, order_payload, new_status):
     before = before_resp.json()
     original_items = before["items"]
 
-    update_payload = {"status": "new_status"}
+    update_payload = {"status": new_status}
 
     update_resp = requests.put(f"{base_url}/orders/{order_id}", json=update_payload)
     assert update_resp.status_code == 200, update_resp.text
@@ -36,7 +36,7 @@ def test_update_order_put(base_url, created_order, order_payload, new_status):
     updated = update_resp.json()
     assert updated["_id"] == order_id
     assert updated["user_id"] == order_payload["user_id"]
-    assert updated["status"] == "new_status"
+    assert updated["status"] == new_status
     # validate PUT doesn't change the items
     assert updated["items"] == original_items
 
@@ -89,6 +89,15 @@ def test_delete_order_twice_second_time_returns_404_or_200(base_url, created_ord
         # If the API is idempotent, it may still return "deleted"
         body = second.json()
         assert body.get("status") in ("deleted", "already_deleted", "not_found"), body
+
+def test_create_order_payment_failure(base_url, order_payload):
+    resp = requests.post(
+        f"{base_url}/orders",
+        json=order_payload,
+        headers={"X-Payment-Fail": "1"},
+    )
+    assert resp.status_code == 402
+
 
 
 

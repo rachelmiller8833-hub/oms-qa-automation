@@ -1,11 +1,13 @@
 from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from typing import List
 from db import connect_db, get_db
 from orders_repo import insert_order, find_order
 from bson import ObjectId
 from schemas import OrderCreate, OrderUpdate, OrderOut
+import os
+from payment_client import PaymentClient, PaymentResult
 import orders_repo
 import db
 
@@ -20,26 +22,39 @@ async def startup():
 async def shutdown():
     await db.close_db()
 
+class FakePaymentClient:
+    def charge(self, user_id: str, amount: float, should_fail: bool = False) -> PaymentResult:
+        # Controlled by env for test purposes
+        should_fail = os.getenv("PAYMENT_SHOULD_FAIL", "0") == "1"
+        if should_fail:
+            return PaymentResult(ok=False, error="mock_failure")
+        return PaymentResult(ok=True)
 
-class Item(BaseModel):
-    product_id: str
-    name: str
-    price: float
-    quantity: int
 
-
-class OrderCreate(BaseModel):
-    user_id: str
-    items: List[Item]
-    total_price: float
-    status: str = "Pending"
+def get_payment_client():
+    mode = os.getenv("PAYMENT_MODE", "real")  # real | mock
+    if mode == "mock":
+        return FakePaymentClient()
+    return PaymentClient()
 
 @app.get("/health")
 def health():
     return {"ok": True}
 
 @app.post("/orders", status_code=201)
-async def create_order(order: OrderCreate, db_handle = Depends(get_db)):
+async def create_order(
+    order: OrderCreate, 
+    request: Request,
+    db_handle = Depends(get_db),
+    payment_client: PaymentClient = Depends(get_payment_client),
+):
+
+    if request.headers.get("X-Payment-Fail") == "1":
+        raise HTTPException(status_code=402, detail="Payment failed")
+    # external dependency call (will be mocked in tests)
+    payment_result = payment_client.charge(order.user_id, order.total_price, request.headers.get("X-Payment-Fail") == "1")
+    if not payment_result.ok:
+        raise HTTPException(status_code=402, detail="Payment failed")
     order_id = await orders_repo.insert_order(db_handle, order.model_dump())
     return {"_id": order_id}
 
