@@ -1,3 +1,5 @@
+# Defines an abstraction for an external payment provider.
+# Designed to be mocked in tests to simulate payment success or failure.
 from dataclasses import dataclass
 
 @dataclass
@@ -13,6 +15,5 @@ class PaymentClient:
     In real life this would call a remote API (Stripe/PayPal/etc).
     """
     def charge(self, user_id: str, amount: float) -> PaymentResult:
-        # Real implementation would be an HTTP request.
-        # We keep it unimplemented on purpose; tests will mock it.
+        # Left unimplemented on purpose; tests are expected to mock this call.
         raise NotImplementedError("External payment provider call is not implemented")
