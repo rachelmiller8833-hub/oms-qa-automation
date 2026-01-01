@@ -17,7 +17,7 @@ jobs:
 
       - name: Build images
         # Build Docker images used for API, MongoDB and tests
-        run: docker compose build --build-arg USE_NETFREE=false
+        run: docker compose build
 
       - name: Create test-results directory
         run: mkdir -p test-results
