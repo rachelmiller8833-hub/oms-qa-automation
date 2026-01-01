@@ -200,6 +200,16 @@ A JUnit report is generated at:
 
 This file is intentionally ignored by Git (`.gitignore`), but is uploaded by the CI pipeline as an artifact, so it can be downloaded from the GitHub Actions run.
 
+## Deployment Gate (Branch Protection)
+
+The project implements a CI-based deployment gate.
+
+All changes to the `main` branch are intended to be merged via Pull Requests.
+The CI pipeline runs automatically on every Pull Request and is designed to
+block merging in case of test failures.
+
+Due to GitHub UI limitations in this repository setup, the branch protection
+rule requiring a specific status check is described here conceptually.
 ### Release Tagging
 
 The project includes automated release tagging as part of the CI pipeline.
